@@ -8,6 +8,10 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as Ec
+
 print(r"""
     ___       ___       ___       ___       ___       ___       ___   
    /\  \     /\__\     /\  \     /\  \     /\  \     /\  \     /\  \  
@@ -30,10 +34,6 @@ chrome_options = Options()
 chrome_options.add_argument(r"user-data-dir=C:\Users\cubos\AppData\Local\Google\Chrome\SeleniumProfile")
 
 service = Service("./chromedriver-win64/chromedriver.exe")
-
-# settup with chromedriver as a service and previously established options
-#driver = webdriver.Chrome(service=service, options=chrome_options)
-#driver.get("https://www.linkedin.com")
 
 while True:
   # 1. get a valid LinkedIn link
@@ -66,14 +66,58 @@ while True:
     driver = webdriver.Chrome(service=service, options=chrome_options)
     driver.get(mainLink)
     time.sleep(5)
-    # find divs
-    divs = driver.find_elements(By.CLASS_NAME, "job-details-jobs-unified-top-card__job-title")
-
-    if not divs:
-      print("No div found ->", divs)
-    else:
-      print("DIV FOUND ->", divs)
     
+    # company name
+    j_name = driver.find_element(By.CSS_SELECTOR, "div.job-details-jobs-unified-top-card__company-name a").text
+    # job position
+    j_position = driver.find_element(By.CSS_SELECTOR, "div.job-details-jobs-unified-top-card__job-title h1 a").text
+    # job skills button and open
+    try:
+      j_skills_btn = WebDriverWait(driver, 10).until(
+        Ec.element_to_be_clickable(
+          (By.CSS_SELECTOR, "button:has(svg[data-test-icon='skills-small'])")
+        )
+      )
+
+      driver.execute_script("arguments[0].scrollIntoView(true);", j_skills_btn)
+      driver.execute_script("arguments[0].click();", j_skills_btn)
+      print("searching for acossiated skills.")
+
+    except Exception:
+      print("Could not load skills button")
+
+    try:
+      # skills
+      j_skills = WebDriverWait(driver, 10).until(
+        Ec.presence_of_all_elements_located(
+          By.CSS_SELECTOR, 
+          "li.job-details-preferences-and-skills__modal-section-insights-list-item div span"
+        )
+      )
+
+      skills = [s.text for s in j_skills if s.text.strip()]
+
+      if skills:
+        print("Skills found")
+        for skill in skills:
+          print("->", skill)
+        else:
+          print("No SKILLS acossiated with job")
+    except Exception:
+      print("Could not load skills")
+
+    # find company name
+    if not j_name:
+      print("No COMPANY found")
+    else:
+      print("Company name ->", j_name)
+    
+    # find position
+    if not j_position:
+      print("No POSITION found")
+    else:
+      print("Position ->", j_position)
+
     driver.quit()
 
   while True:
