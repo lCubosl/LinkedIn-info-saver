@@ -1,7 +1,6 @@
 import time
 import requests
 
-import webbrowser as wb
 from urllib.parse import urlparse
 
 from selenium import webdriver
@@ -33,8 +32,8 @@ chrome_options.add_argument(r"user-data-dir=C:\Users\cubos\AppData\Local\Google\
 service = Service("./chromedriver-win64/chromedriver.exe")
 
 # settup with chromedriver as a service and previously established options
-driver = webdriver.Chrome(service=service, options=chrome_options)
-driver.get("https://www.linkedin.com")
+#driver = webdriver.Chrome(service=service, options=chrome_options)
+#driver.get("https://www.linkedin.com")
 
 while True:
   # 1. get a valid LinkedIn link
@@ -56,9 +55,6 @@ while True:
     except ValueError:
       print("You entered an invalid job listing link")
 
-  # open if link passes validation
-  wb.open(mainLink)
-
   # 2. fetch html content
   response = requests.get(mainLink, headers = {"User-Agent": "Mozilla/5.0"})
   if response.status_code != 200:
@@ -67,17 +63,16 @@ while True:
     print(f"Page fetched Successfuly. Status code: {response.status_code}")
     
     # initialize webdriver
-    # uncoment next line. commented for debugging purposes
-    # driver = webdriver.Chrome(service=service)
+    driver = webdriver.Chrome(service=service, options=chrome_options)
     driver.get(mainLink)
     time.sleep(5)
     # find divs
-    divs = driver.find_elements(By.CLASS_NAME, "application-outlet")
+    divs = driver.find_elements(By.CLASS_NAME, "job-details-jobs-unified-top-card__job-title")
 
     if not divs:
-      print("No div found")
+      print("No div found ->", divs)
     else:
-      print("DIV FOUND")
+      print("DIV FOUND ->", divs)
     
     driver.quit()
 
