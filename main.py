@@ -6,6 +6,8 @@ from urllib.parse import urlparse
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 
 print(r"""
     ___       ___       ___       ___       ___       ___       ___   
@@ -23,7 +25,16 @@ print("\n*********************************************************************")
 
 # all valid links start with https://www.linkedin.com/jobs/
 validLink = "https://www.linkedin.com/jobs/"
-driver = webdriver.Chrome()
+
+# google chrome directory with new settup. loggin once in new profile and selenium keeps session saved
+chrome_options = Options()
+chrome_options.add_argument(r"user-data-dir=C:\Users\cubos\AppData\Local\Google\Chrome\SeleniumProfile")
+
+service = Service("./chromedriver-win64/chromedriver.exe")
+
+# settup with chromedriver as a service and previously established options
+driver = webdriver.Chrome(service=service, options=chrome_options)
+driver.get("https://www.linkedin.com")
 
 while True:
   # 1. get a valid LinkedIn link
@@ -55,6 +66,9 @@ while True:
   else:
     print(f"Page fetched Successfuly. Status code: {response.status_code}")
     
+    # initialize webdriver
+    # uncoment next line. commented for debugging purposes
+    # driver = webdriver.Chrome(service=service)
     driver.get(mainLink)
     time.sleep(5)
     # find divs
