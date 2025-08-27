@@ -76,6 +76,8 @@ while True:
     j_name = driver.find_element(By.CSS_SELECTOR, "div.job-details-jobs-unified-top-card__company-name a").text
     # job position
     j_position = driver.find_element(By.CSS_SELECTOR, "div.job-details-jobs-unified-top-card__job-title h1 a").text
+    # job location
+    j_location = driver.find_element(By.CSS_SELECTOR, "div.job-details-jobs-unified-top-card__primary-description-container div span span").text
 
     # job skills button and open
     try:
@@ -114,6 +116,12 @@ while True:
     else:
       print("Position\n└─", j_position)
 
+    # FIND location
+    if not j_location:
+      print("No JOB Location found")
+    else:
+      print("Location\n└─", j_location)
+
     # FIND skills
     try:
       # skills
@@ -148,6 +156,9 @@ while True:
           ".job-details-people-who-can-help__section--two-pane strong"
         ))
       )
+
+      ### job posters format is also under a button that can be clicked to display the same way 
+      ### skills is. LATER ON, try to implement functionality for that
 
       # join posters name and crawl up to a with href of poster linkedin link
       j_posters = []
