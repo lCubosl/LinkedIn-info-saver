@@ -99,8 +99,8 @@ while True:
       print("Could not load skills button")
     
     # job posters (who posted the job and who to reach out to)
-    j_posters = driver.find_element(By.CSS_SELECTOR, "div.job-details-connections-card")
-    
+    j_posters = driver.find_elements(By.CSS_SELECTOR, "div.job-details-connections-card")
+
     # about the job
     j_about = driver.find_element(By.CSS_SELECTOR, "div.jobs-box__html-content").text
 
@@ -143,7 +143,10 @@ while True:
       print("+ Could not load skills")
     
     # FIND job posters
-    
+    if not j_posters:
+      print("No JOB POSTERS acossiated with job")
+    else:
+      print("Job Posters\n├─", j_posters)
 
     # FIND about
     if not j_about:
