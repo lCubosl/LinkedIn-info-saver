@@ -139,34 +139,39 @@ while True:
     except Exception:
       print("+ Could not load skills")
     
-    # FIND job posters
+    # FIND job posters info
     try:
-      j_poster_name_element = WebDriverWait(driver,10).until(
+      # poster name
+      j_poster_name = WebDriverWait(driver,10).until(
         Ec.presence_of_all_elements_located((
           By.CSS_SELECTOR,
           ".job-details-people-who-can-help__section--two-pane strong"
         ))
       )
 
-      j_poster_name = [s.text for s in j_poster_name_element if s.text.strip()]
+      #poster role
+      j_poster_role = WebDriverWait(driver, 10).until(
+        Ec.presence_of_all_elements_located((
+          By.CSS_SELECTOR,
+          ".artdeco-entity-lockup__subtitle"
+        ))
+      )
+
+      j_poster_name = [s.text for s in j_poster_name if s.text.strip()]
+      j_poster_role = [s.text for s in j_poster_role if s.text.strip()]
 
       if not j_poster_name:
         ("No PEOPLE acossiated with the job")
       else:
         print("People found")
-        for i, name in enumerate(j_poster_name):
+        for i, (name, role) in enumerate(zip(j_poster_name, j_poster_role)):
           if i < len(j_poster_name) - 1:
-            print("├─", name)
+            print("├─", name, "-", role)
           else:
-            print("└─", name)
+            print("└─", name, "-", role)
 
     except Exception:
       print("+ Could not load people")
-
-    # if not j_posters:
-    #   print("No JOB POSTERS acossiated with job")
-    # else:
-    #   print("Job Posters\n├─", j_posters)
 
     # FIND about
     if not j_about:
