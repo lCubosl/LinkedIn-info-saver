@@ -72,6 +72,8 @@ while True:
     time.sleep(5)
 
 # ────────────
+    # link
+    
     # company name
     j_name = driver.find_element(By.CSS_SELECTOR, "div.job-details-jobs-unified-top-card__company-name a").text
     # job position
@@ -104,6 +106,8 @@ while True:
     j_about = driver.find_element(By.CSS_SELECTOR, "div.jobs-box__html-content").text
 
 # ────────────
+    # LINK
+    print("Link\n└─", mainLink)
     # FIND company name
     if not j_name:
       print("No COMPANY found")
