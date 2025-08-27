@@ -71,17 +71,21 @@ while True:
     j_name = driver.find_element(By.CSS_SELECTOR, "div.job-details-jobs-unified-top-card__company-name a").text
     # job position
     j_position = driver.find_element(By.CSS_SELECTOR, "div.job-details-jobs-unified-top-card__job-title h1 a").text
+    
     # job skills button and open
     try:
-      j_skills_btn = WebDriverWait(driver, 10).until(
-        Ec.element_to_be_clickable(
-          (By.CSS_SELECTOR, "button:has(svg[data-test-icon='skills-small'])")
+      svg_element = WebDriverWait(driver, 10).until(
+        Ec.presence_of_element_located(
+          (By.CSS_SELECTOR, "svg.v-align-middle")
         )
       )
+      # debbug. Find the different attribute that defines the button I'm searching for
+      print(f"found svg element ->", svg_element.get_attribute("outerHTML"))
 
-      driver.execute_script("arguments[0].scrollIntoView(true);", j_skills_btn)
-      driver.execute_script("arguments[0].click();", j_skills_btn)
-      print("searching for acossiated skills.")
+      # from svg with class v-align-middle, crawl up to button
+      j_skills_btn = svg_element.find_element(By.XPATH, "./ancestor::button")
+      print(f"found button ->", j_skills_btn.get_attribute("outerHTML"))
+
 
     except Exception:
       print("Could not load skills button")
