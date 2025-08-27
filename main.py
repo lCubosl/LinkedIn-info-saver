@@ -137,41 +137,42 @@ while True:
             print("└─", skill)
 
     except Exception:
-      print("+ Could not load skills")
+      print("\ERROR -> Could not load skills")
     
     # FIND job posters info
     try:
       # poster name
-      j_poster_name = WebDriverWait(driver,10).until(
+      j_poster_name_element = WebDriverWait(driver,10).until(
         Ec.presence_of_all_elements_located((
           By.CSS_SELECTOR,
           ".job-details-people-who-can-help__section--two-pane strong"
         ))
       )
 
-      #poster role
-      j_poster_role = WebDriverWait(driver, 10).until(
-        Ec.presence_of_all_elements_located((
-          By.CSS_SELECTOR,
-          ".artdeco-entity-lockup__subtitle"
-        ))
-      )
+      # join posters name and crawl up to a with href of poster linkedin link
+      j_posters = []
+      for el in j_poster_name_element:
+        name = el.text.strip()
+        try:
+          link = el.find_element(By.XPATH, "./ancestor::a").get_attribute("href")
+        except:
+          link = None
+        if name:
+          j_posters.append((name, link))
 
-      j_poster_name = [s.text for s in j_poster_name if s.text.strip()]
-      j_poster_role = [s.text for s in j_poster_role if s.text.strip()]
-
-      if not j_poster_name:
+      if not j_posters:
         ("No PEOPLE acossiated with the job")
       else:
+        # add every person found and respective linkedin link
         print("People found")
-        for i, (name, role) in enumerate(zip(j_poster_name, j_poster_role)):
-          if i < len(j_poster_name) - 1:
-            print("├─", name, "-", role)
+        for i, (name, link) in enumerate(j_posters):
+          if i < len(j_posters) - 1:
+            print("├─", name, "-", link)
           else:
-            print("└─", name, "-", role)
+            print("└─", name, "-", link)
 
     except Exception:
-      print("+ Could not load people")
+      print("\ERROR -> Could not load people")
 
     # FIND about
     if not j_about:
