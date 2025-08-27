@@ -81,51 +81,55 @@ while True:
         )
       )
       # debbug. Find the different attribute that defines the button I'm searching for
-      print(f"found svg element ->", svg_element.get_attribute("outerHTML"))
+      # print(f"found svg element ->", svg_element.get_attribute("outerHTML"))
 
       # from svg with class v-align-middle, crawl up to button
       j_skills_btn = svg_element.find_element(By.XPATH, "./ancestor::button")
-      print(f"found button ->", j_skills_btn.get_attribute("outerHTML"))
-
+      # print(f"found button ->", j_skills_btn.get_attribute("outerHTML")
       # click button
       driver.execute_script("arguments[0].click();", j_skills_btn)
-      print("Clicked the button")
+      #print("Clicked the button")
 
     # exception error handling could not find the button
     except Exception:
       print("Could not load skills button")
 
-    try:
-      # skills
-      j_skills = WebDriverWait(driver, 10).until(
-        Ec.presence_of_all_elements_located(
-          By.CSS_SELECTOR, 
-          "li.job-details-preferences-and-skills__modal-section-insights-list-item div span"
-        )
-      )
-
-      skills = [s.text for s in j_skills if s.text.strip()]
-
-      if skills:
-        print("Skills found")
-        for skill in skills:
-          print("->", skill)
-        else:
-          print("No SKILLS acossiated with job")
-    except Exception:
-      print("Could not load skills")
-
     # find company name
     if not j_name:
       print("No COMPANY found")
     else:
-      print("Company name ->", j_name)
+      print("+")
+      print("Company name\n ->", j_name)
     
     # find position
     if not j_position:
       print("No POSITION found")
     else:
-      print("Position ->", j_position)
+      print("+")
+      print("Position\n ->", j_position)
+
+    # find skills
+    try:
+      # skills
+      j_skills = WebDriverWait(driver, 10).until(
+        Ec.presence_of_all_elements_located((
+          By.CSS_SELECTOR, 
+          "li.job-details-preferences-and-skills__modal-section-insights-list-item div span"
+        ))
+      )
+
+      skills = [s.text for s in j_skills if s.text.strip()]
+
+      if not skills:
+        print("No SKILLS acossiated with job")
+      else:
+        print("+")
+        print("Skills found")
+        for skill in skills:
+          print(" ->", skill)
+
+    except Exception:
+      print("Could not load skills")
 
     # driver.quit()
 
