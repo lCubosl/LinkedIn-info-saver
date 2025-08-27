@@ -98,9 +98,6 @@ while True:
     except Exception:
       print("Could not load skills button")
     
-    # job posters (who posted the job and who to reach out to)
-    j_posters = driver.find_elements(By.CSS_SELECTOR, "div.job-details-connections-card")
-
     # about the job
     j_about = driver.find_element(By.CSS_SELECTOR, "div.jobs-box__html-content").text
 
@@ -143,10 +140,33 @@ while True:
       print("+ Could not load skills")
     
     # FIND job posters
-    if not j_posters:
-      print("No JOB POSTERS acossiated with job")
-    else:
-      print("Job Posters\n├─", j_posters)
+    try:
+      j_poster_name_element = WebDriverWait(driver,10).until(
+        Ec.presence_of_all_elements_located((
+          By.CSS_SELECTOR,
+          ".job-details-people-who-can-help__section--two-pane strong"
+        ))
+      )
+
+      j_poster_name = [s.text for s in j_poster_name_element if s.text.strip()]
+
+      if not j_poster_name:
+        ("No PEOPLE acossiated with the job")
+      else:
+        print("People found")
+        for i, name in enumerate(j_poster_name):
+          if i < len(j_poster_name) - 1:
+            print("├─", name)
+          else:
+            print("└─", name)
+
+    except Exception:
+      print("+ Could not load people")
+
+    # if not j_posters:
+    #   print("No JOB POSTERS acossiated with job")
+    # else:
+    #   print("Job Posters\n├─", j_posters)
 
     # FIND about
     if not j_about:
