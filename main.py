@@ -57,6 +57,7 @@ while True:
 
   # 2. fetch html content
   response = requests.get(mainLink, headers = {"User-Agent": "Mozilla/5.0"})
+
   if response.status_code != 200:
     print(f"Failed to fetch page. Status code: {response.status_code}")
   else:
@@ -86,7 +87,11 @@ while True:
       j_skills_btn = svg_element.find_element(By.XPATH, "./ancestor::button")
       print(f"found button ->", j_skills_btn.get_attribute("outerHTML"))
 
+      # click button
+      driver.execute_script("arguments[0].click();", j_skills_btn)
+      print("Clicked the button")
 
+    # exception error handling could not find the button
     except Exception:
       print("Could not load skills button")
 
@@ -122,7 +127,7 @@ while True:
     else:
       print("Position ->", j_position)
 
-    driver.quit()
+    # driver.quit()
 
   while True:
     pass
