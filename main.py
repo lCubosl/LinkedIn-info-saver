@@ -26,6 +26,7 @@ print("\n* Original Code by Shifter                                          *")
 print("\n* LinkedIn Job Post Scanner                                         *")
 print("\n*********************************************************************")
 
+# ────────────
 # all valid links start with https://www.linkedin.com/jobs/
 validLink = "https://www.linkedin.com/jobs/"
 
@@ -35,6 +36,7 @@ chrome_options.add_argument(r"user-data-dir=C:\Users\cubos\AppData\Local\Google\
 
 service = Service("./chromedriver-win64/chromedriver.exe")
 
+# ────────────
 while True:
   # 1. get a valid LinkedIn link
   while True:
@@ -55,6 +57,7 @@ while True:
     except ValueError:
       print("You entered an invalid job listing link")
 
+# ────────────
   # 2. fetch html content
   response = requests.get(mainLink, headers = {"User-Agent": "Mozilla/5.0"})
 
@@ -67,12 +70,13 @@ while True:
     driver = webdriver.Chrome(service=service, options=chrome_options)
     driver.get(mainLink)
     time.sleep(5)
-    
+
+# ────────────
     # company name
     j_name = driver.find_element(By.CSS_SELECTOR, "div.job-details-jobs-unified-top-card__company-name a").text
     # job position
     j_position = driver.find_element(By.CSS_SELECTOR, "div.job-details-jobs-unified-top-card__job-title h1 a").text
-    
+
     # job skills button and open
     try:
       svg_element = WebDriverWait(driver, 10).until(
@@ -93,20 +97,27 @@ while True:
     # exception error handling could not find the button
     except Exception:
       print("Could not load skills button")
+    
+    # job posters (who posted the job and who to reach out to)
+    j_posters = driver.find_element(By.CSS_SELECTOR, "div.job-details-connections-card")
+    
+    # about the job
+    j_about = driver.find_element(By.CSS_SELECTOR, "div.jobs-box__html-content").text
 
-    # find company name
+# ────────────
+    # FIND company name
     if not j_name:
       print("No COMPANY found")
     else:
       print("Company name\n└─", j_name)
     
-    # find position
+    # FIND position
     if not j_position:
       print("No POSITION found")
     else:
       print("Position\n└─", j_position)
 
-    # find skills
+    # FIND skills
     try:
       # skills
       j_skills = WebDriverWait(driver, 10).until(
@@ -128,9 +139,17 @@ while True:
           else:
             print("└─", skill)
 
-
     except Exception:
       print("+ Could not load skills")
+    
+    # FIND job posters
+    
+
+    # FIND about
+    if not j_about:
+      print("No ABOUT SECTION found")
+    else:
+      print("About Section\n└─", j_about)
 
     # driver.quit()
 
