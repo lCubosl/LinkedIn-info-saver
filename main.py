@@ -92,19 +92,19 @@ while True:
 
     # exception error handling could not find the button
     except Exception:
-      print("+ Could not load skills button")
+      print("Could not load skills button")
 
     # find company name
     if not j_name:
       print("No COMPANY found")
     else:
-      print("+ Company name\n ->", j_name)
+      print("Company name\n└─", j_name)
     
     # find position
     if not j_position:
       print("No POSITION found")
     else:
-      print("+ Position\n ->", j_position)
+      print("Position\n└─", j_position)
 
     # find skills
     try:
@@ -121,9 +121,13 @@ while True:
       if not skills:
         print("No SKILLS acossiated with job")
       else:
-        print("+ Skills found")
-        for skill in skills:
-          print(" ->", skill)
+        print("Skills found")
+        for i, skill in enumerate(skills):
+          if i < len(skills) -1:
+            print("├─", skill)
+          else:
+            print("└─", skill)
+
 
     except Exception:
       print("+ Could not load skills")
