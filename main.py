@@ -2,6 +2,9 @@ import time
 import requests
 import sys
 
+import csv
+import os
+
 from urllib.parse import urlparse
 
 from selenium import webdriver
@@ -155,6 +158,7 @@ while True:
       print("\ERROR\ Could not load skills")
     
     # FIND job posters info
+    j_posters = []
     try:
       # poster name
       j_poster_name_element = WebDriverWait(driver,10).until(
@@ -168,7 +172,6 @@ while True:
       ### skills is. LATER ON, try to implement functionality for that
 
       # join posters name and crawl up to a with href of poster linkedin link
-      j_posters = []
       for el in j_poster_name_element:
         name = el.text.strip()
         try:
@@ -198,6 +201,51 @@ while True:
     else:
       print("About Section\n└─", "About the job extracted and saved (Description is too long)")
 
+# ────────────
+    jobs_data = []
+    last_id = 0
+
+    people, people_link = zip(*j_posters) if j_posters else ([],[])
+
+    job_info = {
+      "id": last_id + 1,
+      "link": mainLink,
+      "company_name": j_name,
+      "position": j_position,
+      "location": j_location,
+      "skills": skills,
+      "people": people,
+      "people_link": people_link,
+      "more_info": j_about
+    }
+    # add job_info data to jobs_data
+    jobs_data.append(job_info)
+    # save data into csv file
+    csv_file = "jobs_data.csv"
+    write_header = not os.path.exists(csv_file)
+
+    with open(csv_file, mode="a", newline="", encoding="utf-8") as f:
+      writer =  csv.DictWriter(
+        f,
+        fieldnames=["id","link","company_name","position","location","skills","people","people_link","more_info"]
+      )
+
+      if write_header:
+        writer.write_header()
+
+      writer.writerow({
+        "id": job_info["id"],
+        "link": job_info["link"],
+        "company_name": job_info["company_name"],
+        "position": job_info["position"],
+        "location": job_info["location"],
+        "skills": "; ".join(job_info["skills"]),        
+        "people": "; ".join(job_info["people"]),
+        "people_link": "; ".join(job_info["people_link"]),
+        "more_info": job_info["more_info"]
+      })
+
+# ────────────
   print("\INFO\ Information extracted and saved successfully.")
   
   again = input("\nDo you want to enter another valid LinkedIn job Listing to scan? [Y/n]:").strip().lower()
