@@ -34,6 +34,8 @@ validLink = "https://www.linkedin.com/jobs/"
 # google chrome directory with new settup. loggin once in new profile and selenium keeps session saved
 chrome_options = Options()
 chrome_options.add_argument(r"user-data-dir=C:\Users\cubos\AppData\Local\Google\Chrome\SeleniumProfile")
+chrome_options.add_experimental_option("excludeSwitches", ["enable-logging"])
+chrome_options.add_argument("--log-level=3")
 
 service = Service("./chromedriver-win64/chromedriver.exe")
 
@@ -52,7 +54,7 @@ while True:
       if not mainLink.startswith(validLink):
         raise ValueError("Invalid LinkedIn job listing link")
       
-      print("\nYou entered a valid job listing link\nOpening browser and extracting information")
+      print("\n\INFO\ You entered a valid job listing link\n├─Opening browser and extracting information")
       break
     # exception raises error
     except ValueError:
@@ -63,9 +65,9 @@ while True:
   response = requests.get(mainLink, headers = {"User-Agent": "Mozilla/5.0"})
 
   if response.status_code != 200:
-    print(f"Failed to fetch page. Status code: {response.status_code}")
+    print(f"└─Failed to fetch page. Status code: {response.status_code}")
   else:
-    print(f"Page fetched Successfuly. Status code: {response.status_code}")
+    print(f"└─Page fetched Successfuly. Status code: {response.status_code}")
     
     # initialize webdriver
     driver = webdriver.Chrome(service=service, options=chrome_options)
@@ -150,7 +152,7 @@ while True:
             print("└─", skill)
 
     except Exception:
-      print("\ERROR -> Could not load skills")
+      print("\ERROR\ Could not load skills")
     
     # FIND job posters info
     try:
@@ -196,9 +198,11 @@ while True:
     else:
       print("About Section\n└─", "About the job extracted and saved (Description is too long)")
 
-  print("Information extracted and saved successfully.")
+  print("\INFO\ Information extracted and saved successfully.")
   
   again = input("\nDo you want to enter another valid LinkedIn job Listing to scan? [Y/n]:").strip().lower()
   if again == "n":
     driver.quit()
     sys.exit(0)
+  else:
+    driver.quit()
