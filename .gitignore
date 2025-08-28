@@ -3,3 +3,4 @@ chromedriver-win64/chromedriver.exe
 chromedriver-win64/LICENSE.chromedriver
 chromedriver-win64/THIRD_PARTY_NOTICES.chromedriver
 jobs_data.csv
+jobs_data.json

@@ -2,7 +2,7 @@ import time
 import requests
 import sys
 
-import csv
+import json
 import os
 
 from urllib.parse import urlparse
@@ -41,6 +41,9 @@ chrome_options.add_experimental_option("excludeSwitches", ["enable-logging"])
 chrome_options.add_argument("--log-level=3")
 
 service = Service("./chromedriver-win64/chromedriver.exe")
+
+# initialize jobs data before while to fetch length later
+jobs_data = []
 
 # ────────────
 while True:
@@ -202,13 +205,11 @@ while True:
       print("About Section\n└─", "About the job extracted and saved (Description is too long)")
 
 # ────────────
-    jobs_data = []
-    last_id = 0
-
+    # jobs_data = [] initialized earlier
     people, people_link = zip(*j_posters) if j_posters else ([],[])
 
     job_info = {
-      "id": last_id + 1,
+      "id": len(jobs_data) + 1,
       "link": mainLink,
       "company_name": j_name,
       "position": j_position,
@@ -220,30 +221,26 @@ while True:
     }
     # add job_info data to jobs_data
     jobs_data.append(job_info)
-    # save data into csv file
-    csv_file = "jobs_data.csv"
-    write_header = not os.path.exists(csv_file)
+    
+    # save data into json file
+    json_file = "jobs_data.json"
+    
+    # load file if ti exists
+    if os.path.exists(json_file):
+      with open(json_file, "r", encoding="utf-8") as f:
+        try:
+          existing_data = json.load(f)
+        except json.JSONDecodeError:
+          existing_data = []
+    else:
+      existing_data = []
+    
+    # add  new jobs
+    existing_data.append(job_info)
 
-    with open(csv_file, mode="a", newline="", encoding="utf-8") as f:
-      writer =  csv.DictWriter(
-        f,
-        fieldnames=["id","link","company_name","position","location","skills","people","people_link","more_info"]
-      )
-
-      if write_header:
-        writer.write_header()
-
-      writer.writerow({
-        "id": job_info["id"],
-        "link": job_info["link"],
-        "company_name": job_info["company_name"],
-        "position": job_info["position"],
-        "location": job_info["location"],
-        "skills": "; ".join(job_info["skills"]),        
-        "people": "; ".join(job_info["people"]),
-        "people_link": "; ".join(job_info["people_link"]),
-        "more_info": job_info["more_info"]
-      })
+    #save
+    with open(json_file, "w", encoding="utf-8") as f:
+      json.dump(existing_data, f, ensure_ascii=False, indent=2)
 
 # ────────────
   print("\INFO\ Information extracted and saved successfully.")
