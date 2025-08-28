@@ -1,5 +1,6 @@
 import time
 import requests
+import sys
 
 from urllib.parse import urlparse
 
@@ -40,7 +41,7 @@ service = Service("./chromedriver-win64/chromedriver.exe")
 while True:
   # 1. get a valid LinkedIn link
   while True:
-    mainLink = input("\nPlease enter a valid LinkedIn job Listing you want to scan:\n->")
+    mainLink = input("\nPlease enter a valid LinkedIn job Listing you want to scan\n└─")
     try:
       parsedLink = urlparse(mainLink)
       
@@ -193,9 +194,11 @@ while True:
     if not j_about:
       print("No ABOUT SECTION found")
     else:
-      print("About Section\n└─", j_about)
+      print("About Section\n└─", "About the job extracted and saved (Description is too long)")
 
-    # driver.quit()
-
-  while True:
-    pass
+  print("Information extracted and saved successfully.")
+  
+  again = input("\nDo you want to enter another valid LinkedIn job Listing to scan? [Y/n]:").strip().lower()
+  if again == "n":
+    driver.quit()
+    sys.exit(0)
