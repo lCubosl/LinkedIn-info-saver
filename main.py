@@ -158,6 +158,11 @@ while True:
             print("├─", skill)
           else:
             print("└─", skill)
+        
+        # After print, find close button
+        close_btn = driver.find_element(By.CSS_SELECTOR, "button.artdeco-modal__dismiss")
+        # close preferences and skills match
+        driver.execute_script("arguments[0].click();", close_btn)
 
     except Exception:
       print("\ERROR\ Could not load skills")
@@ -198,7 +203,7 @@ while True:
             print("└─", name, "-", link)
 
     except Exception:
-      print("\ERROR -> Could not load people")
+      print("\ERROR\ -> Could not load people")
 
     # FIND about
     if not j_about:
