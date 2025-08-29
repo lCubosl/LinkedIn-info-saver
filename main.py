@@ -178,8 +178,14 @@ while True:
         ))
       )
 
-      ### job posters format is also under a button that can be clicked to display the same way 
-      ### skills is. LATER ON, try to implement functionality for that
+      # job posters advanced search
+      try:
+        # button for job posters
+        j_posters_advanced_btn = driver.find_element(By.CSS_SELECTOR, "button.job-details-people-who-can-help__connections-card-summary-card-action")
+        # open button
+        driver.execute_script("arguments[0].click();", j_posters_advanced_btn)
+      except Exception:
+        print("\ERROR\ could not find the button for job posters advanced search")
 
       # join posters name and crawl up to a with href of poster linkedin link
       for el in j_poster_name_element:
