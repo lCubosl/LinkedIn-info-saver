@@ -16,6 +16,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as Ec
 
+print("┌───────────────────────────────────────────────────────────────────┐")
 print(r"""
     ___       ___       ___       ___       ___       ___       ___   
    /\  \     /\__\     /\  \     /\  \     /\  \     /\  \     /\  \  
@@ -25,10 +26,11 @@ print(r"""
   \  /  /    / /  /   \ \__\      \/__/   \/__/     \ \/__/   | \/__/ 
    \/__/     \/__/     \/__/                         \/__/     \|__|  
 """)
-print("\n*********************************************************************")
-print("\n* Original Code by Shifter                                          *")
-print("\n* LinkedIn Job Post Scanner                                         *")
-print("\n*********************************************************************")
+print("┌───────────────────────────────────────────────────────────────────┐")
+print("│ > Original Code by Shifter, 2025                                  │")
+print("│ > LinkedIn Job Post Scanner                                       │")
+print("└───────────────────────────────────────────────────────────────────┘")
+print("└───────────────────────────────────────────────────────────────────┘")
 
 # ────────────
 # all valid links start with https://www.linkedin.com/jobs/
@@ -47,8 +49,9 @@ jobs_data = []
 
 # ────────────
 while True:
-  # 1. get a valid LinkedIn link
+# 1. get a valid LinkedIn link
   while True:
+    # always prompts to enter valid linkedIn after any action
     mainLink = input("\nPlease enter a valid LinkedIn job Listing you want to scan\n└─")
     try:
       parsedLink = urlparse(mainLink)
@@ -67,7 +70,7 @@ while True:
       print("You entered an invalid job listing link")
 
 # ────────────
-  # 2. fetch html content
+# 2. fetch html content
   response = requests.get(mainLink, headers = {"User-Agent": "Mozilla/5.0"})
 
   if response.status_code != 200:
@@ -81,28 +84,29 @@ while True:
     time.sleep(5)
 
 # ────────────
-    # link
-    
     # company name
     j_name = driver.find_element(By.CSS_SELECTOR, "div.job-details-jobs-unified-top-card__company-name a").text
     # job position
     j_position = driver.find_element(By.CSS_SELECTOR, "div.job-details-jobs-unified-top-card__job-title h1 a").text
     # job location
     j_location = driver.find_element(By.CSS_SELECTOR, "div.job-details-jobs-unified-top-card__primary-description-container div span span").text
+    # about the job
+    j_about = driver.find_element(By.CSS_SELECTOR, "div.jobs-box__html-content").text
 
-    # job skills button and open
+    # finding the skills requires a different approach. I need to find the button with skills and open it
+    # in order to display the HTML content.
+
+    # find element that defines skills button. (svg element)
     try:
       svg_element = WebDriverWait(driver, 10).until(
         Ec.presence_of_element_located(
           (By.CSS_SELECTOR, "svg.v-align-middle")
         )
       )
-      # debbug. Find the different attribute that defines the button I'm searching for
-      # print(f"found svg element ->", svg_element.get_attribute("outerHTML"))
 
       # from svg with class v-align-middle, crawl up to button
       j_skills_btn = svg_element.find_element(By.XPATH, "./ancestor::button")
-      # print(f"found button ->", j_skills_btn.get_attribute("outerHTML")
+
       # click button
       driver.execute_script("arguments[0].click();", j_skills_btn)
       #print("Clicked the button")
@@ -110,11 +114,9 @@ while True:
     # exception error handling could not find the button
     except Exception:
       print("Could not load skills button")
-    
-    # about the job
-    j_about = driver.find_element(By.CSS_SELECTOR, "div.jobs-box__html-content").text
 
 # ────────────
+# 3. Print to the console fetched information
     # LINK
     print("Link\n└─", mainLink)
     # FIND company name
@@ -205,23 +207,10 @@ while True:
       print("About Section\n└─", "About the job extracted and saved (Description is too long)")
 
 # ────────────
+# 4. save information to json file
     # jobs_data = [] initialized earlier
     people, people_link = zip(*j_posters) if j_posters else ([],[])
 
-    job_info = {
-      "id": len(jobs_data) + 1,
-      "link": mainLink,
-      "company_name": j_name,
-      "position": j_position,
-      "location": j_location,
-      "skills": skills,
-      "people": people,
-      "people_link": people_link,
-      "more_info": j_about
-    }
-    # add job_info data to jobs_data
-    jobs_data.append(job_info)
-    
     # save data into json file
     json_file = "jobs_data.json"
     
@@ -235,6 +224,23 @@ while True:
     else:
       existing_data = []
     
+    # next DI
+    next_id = max([job["id"] for job in existing_data], default=0) + 1
+
+    job_info = {
+      "id": next_id,
+      "link": mainLink,
+      "company_name": j_name,
+      "position": j_position,
+      "location": j_location,
+      "skills": skills,
+      "people": people,
+      "people_link": people_link,
+      "more_info": j_about
+    }
+    # add job_info data to jobs_data
+    jobs_data.append(job_info)
+
     # add  new jobs
     existing_data.append(job_info)
 
@@ -243,10 +249,12 @@ while True:
       json.dump(existing_data, f, ensure_ascii=False, indent=2)
 
 # ────────────
+# 5. Prompt for new query. If yes, loop back to begining
   print("\INFO\ Information extracted and saved successfully.")
   
   again = input("\nDo you want to enter another valid LinkedIn job Listing to scan? [Y/n]:").strip().lower()
   if again == "n":
+    print("\INFO\ You chose No. Exiting program.")
     driver.quit()
     sys.exit(0)
   else:
