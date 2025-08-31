@@ -184,6 +184,14 @@ while True:
         j_posters_advanced_btn = driver.find_element(By.CSS_SELECTOR, "button.job-details-people-who-can-help__connections-card-summary-card-action")
         # open button
         driver.execute_script("arguments[0].click();", j_posters_advanced_btn)
+
+        # button to close job posters advanced search
+        j_posters_advanced_btn_close = driver.find_element(
+          By.CSS_SELECTOR, "button.artdeco-modal__dismiss"
+        )
+        # close job posters advanced search
+        driver.execute_script("arguments[0].click();", j_posters_advanced_btn_close)
+
       except Exception:
         print("\ERROR\ could not find the button for job posters advanced search")
 
@@ -223,7 +231,7 @@ while True:
     people, people_link = zip(*j_posters) if j_posters else ([],[])
 
     # save data into json file
-    json_file = "jobs_data.json"
+    json_file = "jobs_data_test.json"
     
     # load file if ti exists
     if os.path.exists(json_file):
