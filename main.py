@@ -46,6 +46,8 @@ service = Service("./chromedriver-win64/chromedriver.exe")
 
 # initialize jobs data before while to fetch length later
 jobs_data = []
+# initialize messages data 
+messages_data = []
 
 # ────────────
 while True:
@@ -294,16 +296,45 @@ while True:
     }
     # add job_info data to jobs_data
     jobs_data.append(job_info)
-
     # add  new jobs
     existing_data.append(job_info)
 
-    #save
+    # write to file
     with open(json_file, "w", encoding="utf-8") as f:
       json.dump(existing_data, f, ensure_ascii=False, indent=2)
 
 # ────────────
-# 5. Prompt for new query. If yes, loop back to begining
+# 5. save messages to be sent to recruiters or people stored in j_posters_all
+    # json file
+    sent_messages_json = "sent_messages.json"
+    # template message to be generated
+    template_message = f"Olá {people}\n\nGostava de saber se ainda existem vagas disponíveis para a posiçao {j_position} na {j_name}?\n\nEnviei curriculo uma vez que as minhas skills se alinham com a descriçao do trabalho no entanto decidi entrar em contacto na mesma uma vez que a {j_name} parece ser uma boa empresa para trabalhar e gostaria de um dia integrar na equipa.\n\nDeixo em baixo, o meu curriculo, caso queira dar uma vista de olhos\n\nCom os melhores cumprimentos,\nLuís Marques."
+
+    if os.path.exists(sent_messages_json):
+      with open(sent_messages_json, "r", encoding="utf-8") as f:
+        try:
+          existing_message_data = json.load(f)
+        except json.JSONDecodeError:
+          existing_message_data = []
+    else:
+      existing_message_data = []
+    
+    message_info = {
+      "id": next_id,
+      "company_name": j_name,
+      "message": template_message
+    }
+
+    # add message_info to messages_data
+    messages_data.append(message_info)
+    existing_message_data.append(message_info)
+
+    # write to file
+    with open(sent_messages_json, "w", encoding="utf-8") as f:
+      json.dump(existing_message_data, f, ensure_ascii=False, indent=2)
+
+# ────────────
+# 6. Prompt for new query. If yes, loop back to begining
   print("\INFO\ Information extracted and saved successfully.")
   
   again = input("\nDo you want to enter another valid LinkedIn job Listing to scan? [Y/n]:").strip().lower()
