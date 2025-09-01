@@ -95,7 +95,6 @@ while True:
 
     # finding the skills requires a different approach. I need to find the button with skills and open it
     # in order to display the HTML content.
-
     # find element that defines skills button. (svg element)
     try:
       svg_element = WebDriverWait(driver, 10).until(
@@ -178,12 +177,36 @@ while True:
         ))
       )
 
-      # job posters advanced search
+      # job posters ADVANCED SEARCH
+      j_posters_advanced = []
       try:
         # button for job posters
         j_posters_advanced_btn = driver.find_element(By.CSS_SELECTOR, "button.job-details-people-who-can-help__connections-card-summary-card-action")
         # open button
         driver.execute_script("arguments[0].click();", j_posters_advanced_btn)
+
+        j_posters_advanced_search = WebDriverWait(driver,10).until(
+          Ec.presence_of_all_elements_located((
+            By.CSS_SELECTOR, 
+            ".job-details-people-who-can-help__connections-profile-card-title strong"
+          ))
+        )
+
+        for el in j_posters_advanced_search:
+          name = el.text.strip()
+          if name:
+            j_posters_advanced.append(name)
+        
+        if not j_posters_advanced:
+          ("No PEOPLE in advanced search acossiated with the job")
+        else:
+          # add every person found and respective linkedin link
+          print("People in advanced search found")
+          for i in j_posters_advanced:
+            if i < len(j_posters_advanced) - 1:
+              print("├─", name)
+            else:
+              print("└─", name)
 
         # button to close job posters advanced search
         j_posters_advanced_btn_close = driver.find_element(
