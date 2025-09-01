@@ -308,7 +308,7 @@ while True:
     # json file
     sent_messages_json = "sent_messages.json"
     # template message to be generated
-    template_message = f"Olá {people}\n\nGostava de saber se ainda existem vagas disponíveis para a posiçao {j_position} na {j_name}?\n\nEnviei curriculo uma vez que as minhas skills se alinham com a descriçao do trabalho no entanto decidi entrar em contacto na mesma uma vez que a {j_name} parece ser uma boa empresa para trabalhar e gostaria de um dia integrar na equipa.\n\nDeixo em baixo, o meu curriculo, caso queira dar uma vista de olhos\n\nCom os melhores cumprimentos,\nLuís Marques."
+    template_message = [f"Olá {p}\n\nGostava de saber se ainda existem vagas disponíveis para a posiçao {j_position} na {j_name}?\n\nEnviei curriculo uma vez que as minhas skills se alinham com a descriçao do trabalho no entanto decidi entrar em contacto na mesma uma vez que a {j_name} parece ser uma boa empresa para trabalhar e gostaria de um dia integrar na equipa.\n\nDeixo em baixo, o meu curriculo, caso queira dar uma vista de olhos\n\nCom os melhores cumprimentos,\nLuís Marques." for p in people]
 
     if os.path.exists(sent_messages_json):
       with open(sent_messages_json, "r", encoding="utf-8") as f:
