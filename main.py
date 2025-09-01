@@ -194,19 +194,24 @@ while True:
 
         for el in j_posters_advanced_search:
           name = el.text.strip()
+          try:
+            link = el.find_element(By.XPATH, "./ancestor::a").get_attribute("href")
+          except:
+            link = None
+
           if name:
-            j_posters_advanced.append(name)
+            j_posters_advanced.append((name, link))
         
         if not j_posters_advanced:
           ("No PEOPLE in advanced search acossiated with the job")
         else:
           # add every person found and respective linkedin link
           print("People in advanced search found")
-          for i in j_posters_advanced:
+          for i,(name, link) in enumerate(j_posters_advanced):
             if i < len(j_posters_advanced) - 1:
-              print("├─", name)
+              print("├─", name, "-", link)
             else:
-              print("└─", name)
+              print("└─", name, "-", link)
 
         # button to close job posters advanced search
         j_posters_advanced_btn_close = driver.find_element(
@@ -225,6 +230,7 @@ while True:
           link = el.find_element(By.XPATH, "./ancestor::a").get_attribute("href")
         except:
           link = None
+          
         if name:
           j_posters.append((name, link))
 
