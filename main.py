@@ -177,52 +177,6 @@ while True:
         ))
       )
 
-      # job posters ADVANCED SEARCH
-      j_posters_advanced = []
-      try:
-        # button for job posters
-        j_posters_advanced_btn = driver.find_element(By.CSS_SELECTOR, "button.job-details-people-who-can-help__connections-card-summary-card-action")
-        # open button
-        driver.execute_script("arguments[0].click();", j_posters_advanced_btn)
-
-        j_posters_advanced_search = WebDriverWait(driver,10).until(
-          Ec.presence_of_all_elements_located((
-            By.CSS_SELECTOR, 
-            ".job-details-people-who-can-help__connections-profile-card-title strong"
-          ))
-        )
-
-        for el in j_posters_advanced_search:
-          name = el.text.strip()
-          try:
-            link = el.find_element(By.XPATH, "./ancestor::a").get_attribute("href")
-          except:
-            link = None
-
-          if name:
-            j_posters_advanced.append((name, link))
-        
-        if not j_posters_advanced:
-          ("No PEOPLE in advanced search acossiated with the job")
-        else:
-          # add every person found and respective linkedin link
-          print("People in advanced search found")
-          for i,(name, link) in enumerate(j_posters_advanced):
-            if i < len(j_posters_advanced) - 1:
-              print("├─", name, "-", link)
-            else:
-              print("└─", name, "-", link)
-
-        # button to close job posters advanced search
-        j_posters_advanced_btn_close = driver.find_element(
-          By.CSS_SELECTOR, "button.artdeco-modal__dismiss"
-        )
-        # close job posters advanced search
-        driver.execute_script("arguments[0].click();", j_posters_advanced_btn_close)
-
-      except Exception:
-        print("\ERROR\ could not find the button for job posters advanced search")
-
       # join posters name and crawl up to a with href of poster linkedin link
       for el in j_poster_name_element:
         name = el.text.strip()
@@ -248,6 +202,51 @@ while True:
     except Exception:
       print("\ERROR\ -> Could not load people")
 
+    # FIND job posters ADVANCED SEARCH
+    j_posters_advanced = []
+    try:
+        # button for job posters
+        j_posters_advanced_btn = driver.find_element(By.CSS_SELECTOR, "button.job-details-people-who-can-help__connections-card-summary-card-action")
+        # open button
+        driver.execute_script("arguments[0].click();", j_posters_advanced_btn)
+
+        j_posters_advanced_search = WebDriverWait(driver,10).until(
+          Ec.presence_of_all_elements_located((
+            By.CSS_SELECTOR, 
+            ".job-details-people-who-can-help__connections-profile-card-title strong"
+          ))
+        )
+
+        for el in j_posters_advanced_search:
+          name = el.text.strip()
+          try:
+            link = el.find_element(By.XPATH, "./ancestor::a").get_attribute("href")
+          except:
+            link = None
+          if name:
+            j_posters_advanced.append((name, link))
+        
+        if not j_posters_advanced:
+          ("No PEOPLE in advanced search acossiated with the job")
+        else:
+          # add every person found and respective linkedin link
+          print("People in advanced search found")
+          for i,(name, link) in enumerate(j_posters_advanced):
+            if i < len(j_posters_advanced) - 1:
+              print("├─", name, "-", link)
+            else:
+              print("└─", name, "-", link)
+
+        # button to close job posters advanced search
+        j_posters_advanced_btn_close = driver.find_element(
+          By.CSS_SELECTOR, "button.artdeco-modal__dismiss"
+        )
+        # close job posters advanced search
+        driver.execute_script("arguments[0].click();", j_posters_advanced_btn_close)
+
+    except Exception:
+      print("\ERROR\ could not find the button for job posters advanced search")
+
     # FIND about
     if not j_about:
       print("No ABOUT SECTION found")
@@ -256,8 +255,15 @@ while True:
 
 # ────────────
 # 4. save information to json file
+    # list with both job posters and advanced job posters search
+    j_posters_all = []
+    if j_posters:
+      j_posters_all.extend(j_posters)
+    if j_posters_advanced:
+      j_posters_all.extend(j_posters_advanced)
+
     # jobs_data = [] initialized earlier
-    people, people_link = zip(*j_posters) if j_posters else ([],[])
+    people, people_link = zip(*j_posters_all) if j_posters_all else ([],[])
 
     # save data into json file
     json_file = "jobs_data_test.json"
